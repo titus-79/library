@@ -2,77 +2,36 @@ package co.simplon.library.entity;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.UUID;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "users")
 public class UserEntity {
 
 //    un identifiant UUID
     @Id
+    @Setter(AccessLevel.PROTECTED)
     @GeneratedValue(strategy = GenerationType.UUID)
-    public String id;
+    private UUID id;
 //    un nom d'utilisateur
     @Nonnull
     @Column(nullable = false)
-    public String userName;
+    private String userName;
 //    une adresse e-mail
     @Nonnull
-    @Column(nullable = false)
-    public String userMail;
+    @Column(nullable = false, unique = true)
+    private String userMail;
 //    un mot de passe
     @Nonnull
     @Column(nullable = false)
-    public String userPassword;
+    private String userPassword;
 
-    public UserEntity(String id, @Nonnull String userName, @Nonnull String userMail, @Nonnull String userPassword) {
-        this.id = id;
-        this.userName = userName;
-        this.userMail = userMail;
-        this.userPassword = userPassword;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Nonnull
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(@Nonnull String userName) {
-        this.userName = userName;
-    }
-
-    @Nonnull
-    public String getUserMail() {
-        return userMail;
-    }
-
-    public void setUserMail(@Nonnull String userMail) {
-        this.userMail = userMail;
-    }
-
-    @Nonnull
-    public String getUserPassword() {
-        return userPassword;
-    }
-
-    public void setUserPassword(@Nonnull String userPassword) {
-        this.userPassword = userPassword;
-    }
-
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "id='" + id + '\'' +
-                ", userName='" + userName + '\'' +
-                ", userMail='" + userMail + '\'' +
-                ", userPassword='" + userPassword + '\'' +
-                '}';
-    }
 }

@@ -2,11 +2,19 @@ package co.simplon.library.entity;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Arrays;
+import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
 @Table(name = "book")
+@NoArgsConstructor
 public class BookEntity {
 
     @Id
@@ -21,9 +29,11 @@ public class BookEntity {
     @Column(nullable = false)
     public String Autor;
 //    une catégorie
+    @ElementCollection
+    @CollectionTable(name = "book_category", joinColumns = @JoinColumn(name = "book_id"))
+    @Column(name = "category")
     @Nonnull
-    @Column(nullable = false)
-    public String[] category;
+    private List<String> category;
 //    une année de publication
     @Nonnull
     @Column(nullable = false)
@@ -33,75 +43,5 @@ public class BookEntity {
     @Column(nullable = false)
     public int nbCopyAllowed;
 
-    public BookEntity(String id, @Nonnull String title, @Nonnull String autor, @Nonnull String[] category, int yearPublish, int nbCopyAllowed) {
-        this.id = id;
-        this.title = title;
-        Autor = autor;
-        this.category = category;
-        this.yearPublish = yearPublish;
-        this.nbCopyAllowed = nbCopyAllowed;
-    }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Nonnull
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(@Nonnull String title) {
-        this.title = title;
-    }
-
-    @Nonnull
-    public String getAutor() {
-        return Autor;
-    }
-
-    public void setAutor(@Nonnull String autor) {
-        Autor = autor;
-    }
-
-    @Nonnull
-    public String[] getCategory() {
-        return category;
-    }
-
-    public void setCategory(@Nonnull String[] category) {
-        this.category = category;
-    }
-
-    public int getYearPublish() {
-        return yearPublish;
-    }
-
-    public void setYearPublish(int yearPublish) {
-        this.yearPublish = yearPublish;
-    }
-
-    public int getNbCopyAllowed() {
-        return nbCopyAllowed;
-    }
-
-    public void setNbCopyAllowed(int nbCopyAllowed) {
-        this.nbCopyAllowed = nbCopyAllowed;
-    }
-
-    @Override
-    public String toString() {
-        return "BookEntity{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", Autor='" + Autor + '\'' +
-                ", category=" + Arrays.toString(category) +
-                ", yearPublish=" + yearPublish +
-                ", nbCopyAllowed=" + nbCopyAllowed +
-                '}';
-    }
 }
