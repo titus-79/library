@@ -6,7 +6,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -14,7 +19,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Table(name = "users")
-public class UserEntity {
+public class UserEntity implements UserDetails {
 
 //    un identifiant UUID
     @Id
@@ -24,14 +29,29 @@ public class UserEntity {
 //    un nom d'utilisateur
     @Nonnull
     @Column(nullable = false)
-    private String userName;
+    private String username;
 //    une adresse e-mail
     @Nonnull
     @Column(nullable = false, unique = true)
-    private String userMail;
+    private String email;
 //    un mot de passe
     @Nonnull
     @Column(nullable = false)
-    private String userPassword;
+    private String password;
 
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
 }

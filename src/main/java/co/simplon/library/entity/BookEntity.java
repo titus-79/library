@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -19,7 +20,7 @@ public class BookEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    public String id;
+    public UUID id;
 
     @Nonnull
     @Column(nullable = false)
@@ -27,7 +28,7 @@ public class BookEntity {
 //    un auteur
     @Nonnull
     @Column(nullable = false)
-    public String Autor;
+    public String author;
 //    une catégorie
     @ElementCollection
     @CollectionTable(name = "book_category", joinColumns = @JoinColumn(name = "book_id"))
