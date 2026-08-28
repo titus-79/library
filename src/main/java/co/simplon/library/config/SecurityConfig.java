@@ -24,9 +24,6 @@ public class SecurityConfig {
 
     private final AuthService authService;
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-
     public SecurityConfig (AuthService authServiceInjected) {
         this.authService = authServiceInjected;
     }

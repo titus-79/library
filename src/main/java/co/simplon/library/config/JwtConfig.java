@@ -20,6 +20,11 @@ import java.security.interfaces.RSAPublicKey;
 @Configuration
 public class JwtConfig {
 
+// Creation des clés public et privé dans src/main/resources/certs avec la library OpenSSL
+//    mkdir -p src/main/resources/certs
+//    openssl genrsa -out src/main/resources/certs/private.pem 2048
+//    openssl rsa -in src/main/resources/certs/private.pem -pubout -out src/main/resources/certs/public.pem
+
     @Value("${jwt.private.key}")
     RSAPrivateKey privateKey;
 
