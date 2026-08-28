@@ -15,6 +15,7 @@ public class AuthService  implements UserDetailsService {
         this.userRepository = userRepositoryInjected;
     }
 
+    // Sert à exprimer à spring security comment on trouve l'utilisateur grace à son identifiant
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return this.userRepository.findByUsername(username)

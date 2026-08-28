@@ -4,6 +4,9 @@ import co.simplon.library.entity.UserEntity;
 import co.simplon.library.exception.UserAlreadyExistsException;
 import co.simplon.library.repository.UserRepository;
 import co.simplon.library.service.AuthService;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,14 +20,17 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final AuthService authService;
+    private final AuthenticationManager authManager;
 
     public AuthController(
             PasswordEncoder passwordEncoderInjected,
             UserRepository userRepositoryInjected,
-            AuthService authServiceInjected) {
+            AuthService authServiceInjected,
+            AuthenticationManager authManagerInjected) {
         this.passwordEncoder = passwordEncoderInjected;
         this.userRepository = userRepositoryInjected;
         this.authService = authServiceInjected;
+        this.authManager = authManagerInjected;
     }
 
     @PostMapping("/register")
@@ -36,5 +42,13 @@ public class AuthController {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    @PostMapping("/login")
+    public Authentication login (@RequestBody UserEntity user) {
+        Authentication auth = this.authManager.authenticate(new UsernamePasswordAuthenticationToken(
+                user.getUsername(), user.getPassword()));
+//        String token = tokenService.generateToken(auth);
+        return auth;
     }
 }
