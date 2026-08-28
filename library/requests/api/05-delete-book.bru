@@ -1,0 +1,20 @@
+meta {
+  name: DELETE /api/books/{id}
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/books/:id
+  auth: none
+}
+
+params:path {
+  id: {{bookId}}
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt}}
+}
+

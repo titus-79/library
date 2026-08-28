@@ -1,0 +1,19 @@
+meta {
+  name: GET /api/books
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/books
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt}}
+}
+
+script:post-response {
+  bru.setVar("bookId", res.body[0].id);
+}

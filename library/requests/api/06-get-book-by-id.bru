@@ -1,0 +1,19 @@
+meta {
+  name: GET /api/books/{id}
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/books/:id
+  auth: none
+}
+
+params:path {
+  id: {{bookId}}
+}
+
+headers {
+  Accept: application/json
+  Authorization: Bearer {{jwt}}
+}
