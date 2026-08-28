@@ -2,6 +2,7 @@ package co.simplon.library.entity;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -32,6 +34,7 @@ public class UserEntity implements UserDetails {
     private String username;
 //    une adresse e-mail
     @Nonnull
+    @Email
     @Column(nullable = false, unique = true)
     private String email;
 //    un mot de passe
@@ -39,10 +42,19 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_authority")
+    )
+    private Set<RoleEntity> authorities;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+
+        return this.authorities;
     }
 
     @Override

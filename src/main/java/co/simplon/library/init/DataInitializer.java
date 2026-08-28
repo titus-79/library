@@ -1,7 +1,9 @@
 package co.simplon.library.init;
 
 import co.simplon.library.entity.BookEntity;
+import co.simplon.library.entity.RoleEntity;
 import co.simplon.library.repository.BookRepository;
+import co.simplon.library.repository.RoleRepository;
 import co.simplon.library.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -13,12 +15,15 @@ public class DataInitializer implements CommandLineRunner {
 
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     public DataInitializer(
             BookRepository bookRepositoryInjected,
-            UserRepository userRepositoryInjected) {
+            UserRepository userRepositoryInjected,
+            RoleRepository roleRepositoryInjected) {
         this.bookRepository = bookRepositoryInjected;
         this.userRepository = userRepositoryInjected;
+        this.roleRepository = roleRepositoryInjected;
     }
 
     @Override
@@ -48,5 +53,12 @@ public class DataInitializer implements CommandLineRunner {
         );
 
         this.bookRepository.saveAll(books);
+
+        List<RoleEntity> roles = List.of(
+                new RoleEntity("ROLE_USER"),
+                new RoleEntity("ROLE_ADMIN")
+        );
+
+        this.roleRepository.saveAll(roles);
     }
 }

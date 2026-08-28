@@ -2,10 +2,7 @@ package co.simplon.library.entity;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,21 +11,22 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-@Table(name = "book")
 @NoArgsConstructor
+@Builder
+@Table(name = "book")
 public class BookEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    public UUID id;
+    private UUID id;
 
     @Nonnull
     @Column(nullable = false)
-    public String title;
+    private String title;
 //    un auteur
     @Nonnull
     @Column(nullable = false)
-    public String author;
+    private String author;
 //    une catégorie
     @ElementCollection
     @CollectionTable(name = "book_category", joinColumns = @JoinColumn(name = "book_id"))
@@ -36,13 +34,11 @@ public class BookEntity {
     @Nonnull
     private List<String> category;
 //    une année de publication
-    @Nonnull
     @Column(nullable = false)
-    public int yearPublish;
+    private int yearPublish;
 //    un nombre d'exemplaires disponibles
-    @Nonnull
     @Column(nullable = false)
-    public int nbCopyAllowed;
+    private int nbCopyAllowed;
 
 
 }

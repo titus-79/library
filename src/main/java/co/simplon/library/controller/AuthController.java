@@ -1,7 +1,10 @@
 package co.simplon.library.controller;
 
+import co.simplon.library.entity.RoleEntity;
 import co.simplon.library.entity.UserEntity;
+import co.simplon.library.exception.ResourceNotFoundException;
 import co.simplon.library.exception.UserAlreadyExistsException;
+import co.simplon.library.repository.RoleRepository;
 import co.simplon.library.repository.UserRepository;
 import co.simplon.library.service.AuthService;
 import co.simplon.library.service.TokenService;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,18 +30,21 @@ public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authManager;
     private final TokenService tokenService;
+    private final RoleRepository roleRepository;
 
     public AuthController(
             PasswordEncoder passwordEncoderInjected,
             UserRepository userRepositoryInjected,
             AuthService authServiceInjected,
             AuthenticationManager authManagerInjected,
-            TokenService tokenServiceInjected) {
+            TokenService tokenServiceInjected,
+            RoleRepository roleRepositoryInjected) {
         this.passwordEncoder = passwordEncoderInjected;
         this.userRepository = userRepositoryInjected;
         this.authService = authServiceInjected;
         this.authManager = authManagerInjected;
         this.tokenService = tokenServiceInjected;
+        this.roleRepository = roleRepositoryInjected;
     }
 
     @PostMapping("/register")
@@ -47,6 +55,9 @@ public class AuthController {
             );
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        RoleEntity roleEntity = roleRepository.findById("ROLE_USER")
+                .orElseThrow(() -> new ResourceNotFoundException("Rôle ROLE_USER introuvable en base"));
+        user.setAuthorities(Set.of(roleEntity));
         return userRepository.save(user);
     }
 
