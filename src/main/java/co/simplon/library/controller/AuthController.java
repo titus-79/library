@@ -1,6 +1,9 @@
 package co.simplon.library.controller;
 
 import co.simplon.library.dto.LoginDto;
+import co.simplon.library.dto.LoginRequest;
+import co.simplon.library.dto.RegisterRequest;
+import co.simplon.library.dto.RegisterResponse;
 import co.simplon.library.entity.RoleEntity;
 import co.simplon.library.entity.UserEntity;
 import co.simplon.library.exception.ResourceNotFoundException;
@@ -9,6 +12,7 @@ import co.simplon.library.repository.RoleRepository;
 import co.simplon.library.repository.UserRepository;
 import co.simplon.library.service.AuthService;
 import co.simplon.library.service.TokenService;
+import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,23 +51,34 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public UserEntity registerUser(@RequestBody UserEntity user) {
-        if (authService.existsByUsername(user.getUsername())) {
+    public RegisterResponse registerUser(@Valid @RequestBody RegisterRequest request) {
+        if (authService.existsByUsername(request.username())) {
             throw new UserAlreadyExistsException(
-                    "Un utilisateur avec le nom '" + user.getUsername() + "' existe déjà"
-            );
+                    "Un utilisateur avec le nom '" + request.username() + "' existe déjà");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        RoleEntity roleEntity = roleRepository.findById("ROLE_USER")
+        if (userRepository.existsByEmail(request.email())) {
+            throw new UserAlreadyExistsException(
+                    "Un utilisateur avec l'email '" + request.email() + "' existe déjà");
+        }
+
+        RoleEntity roleUser = roleRepository.findById("ROLE_USER")
                 .orElseThrow(() -> new ResourceNotFoundException("Rôle ROLE_USER introuvable en base"));
-        user.setAuthorities(Set.of(roleEntity));
-        return userRepository.save(user);
+
+        UserEntity user = UserEntity.builder()
+                .username(request.username())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
+                .authorities(Set.of(roleUser))
+                .build();
+
+        UserEntity saved = userRepository.save(user);
+        return new RegisterResponse(saved.getId(), saved.getUsername(), saved.getEmail());
     }
 
     @PostMapping("/login")
-    public LoginDto login(@RequestBody UserEntity user) {
+    public LoginDto login(@Valid @RequestBody LoginRequest request) {
         Authentication auth = this.authManager.authenticate(new UsernamePasswordAuthenticationToken(
-                user.getUsername(), user.getPassword()));
+                request.username(), request.password()));
         String token = tokenService.generateToken(auth);
 
         return new LoginDto(token, auth.getName());

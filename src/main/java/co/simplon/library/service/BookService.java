@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Transactional(readOnly = true)
@@ -41,12 +40,11 @@ public class BookService {
             .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'ID: " + id));
 
             book.setTitle(updateBook.getTitle());
-            book.setTitle(updateBook.getTitle());
             book.setAuthor(updateBook.getAuthor());
             book.setCategory(updateBook.getCategory());
             book.setYearPublish(updateBook.getYearPublish());
             book.setNbCopyAllowed(updateBook.getNbCopyAllowed());
-        return bookRepository.save(updateBook);
+        return bookRepository.save(book);
     }
 
     @Transactional
