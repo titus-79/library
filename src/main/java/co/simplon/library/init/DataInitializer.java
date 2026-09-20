@@ -2,13 +2,16 @@ package co.simplon.library.init;
 
 import co.simplon.library.entity.BookEntity;
 import co.simplon.library.entity.RoleEntity;
+import co.simplon.library.entity.UserEntity;
 import co.simplon.library.repository.BookRepository;
 import co.simplon.library.repository.RoleRepository;
 import co.simplon.library.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -16,14 +19,17 @@ public class DataInitializer implements CommandLineRunner {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(
             BookRepository bookRepositoryInjected,
             UserRepository userRepositoryInjected,
-            RoleRepository roleRepositoryInjected) {
+            RoleRepository roleRepositoryInjected,
+            PasswordEncoder passwordEncoderInjected) {
         this.bookRepository = bookRepositoryInjected;
         this.userRepository = userRepositoryInjected;
         this.roleRepository = roleRepositoryInjected;
+        this.passwordEncoder = passwordEncoderInjected;
     }
 
     @Override
@@ -54,11 +60,17 @@ public class DataInitializer implements CommandLineRunner {
 
         this.bookRepository.saveAll(books);
 
-        List<RoleEntity> roles = List.of(
-                new RoleEntity("ROLE_USER"),
-                new RoleEntity("ROLE_ADMIN")
+
+        RoleEntity user = new RoleEntity("ROLE_USER");
+        RoleEntity admin = new RoleEntity("ROLE_ADMIN");
+        this.roleRepository.saveAll(List.of(admin, user));
+
+
+        List<UserEntity> users = List.of(
+                new UserEntity(null, "Jeff", "jeff.bezos@amazon.fr", passwordEncoder.encode("amazon"), Set.of(admin)),
+                new UserEntity(null, "Homer", "homer.simpson@simpson.us", passwordEncoder.encode("marge"), Set.of(user))
         );
 
-        this.roleRepository.saveAll(roles);
+        this.userRepository.saveAll(users);
     }
 }
