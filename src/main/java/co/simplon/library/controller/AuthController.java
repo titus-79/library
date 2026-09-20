@@ -1,5 +1,6 @@
 package co.simplon.library.controller;
 
+import co.simplon.library.dto.LoginDto;
 import co.simplon.library.entity.RoleEntity;
 import co.simplon.library.entity.UserEntity;
 import co.simplon.library.exception.ResourceNotFoundException;
@@ -17,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -62,10 +61,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody UserEntity user) {
+    public LoginDto login(@RequestBody UserEntity user) {
         Authentication auth = this.authManager.authenticate(new UsernamePasswordAuthenticationToken(
                 user.getUsername(), user.getPassword()));
         String token = tokenService.generateToken(auth);
-        return Map.of("token", token);
+
+        return new LoginDto(token, auth.getName());
     }
 }
