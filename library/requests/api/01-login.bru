@@ -18,11 +18,10 @@ headers {
 body:json {
   {
     "username": "pierre",
-    "password": "tacos"
+    "password": "tacostacos"
   }
 }
 
 script:post-response {
   bru.setVar("jwt", res.body.token);
 }
-

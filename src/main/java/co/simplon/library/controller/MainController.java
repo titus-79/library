@@ -1,5 +1,7 @@
 package co.simplon.library.controller;
 
+import co.simplon.library.dto.BookRequestDto;
+import co.simplon.library.dto.BookResponseDto;
 import co.simplon.library.entity.BookEntity;
 import co.simplon.library.service.BookService;
 import jakarta.validation.Valid;
@@ -7,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.util.List;
 import java.util.UUID;
@@ -18,39 +19,45 @@ public class MainController {
 
     private final BookService bookService;
 
-    public MainController(
-            BookService bookServiceInjected) {
+    public MainController(BookService bookServiceInjected) {
         this.bookService = bookServiceInjected;
     }
-//    GET /api/books
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping
-    public ResponseEntity<List<BookEntity>> getAllBooks() {
-        return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
+    public ResponseEntity<List<BookResponseDto>> getAllBooks() {
+        List<BookResponseDto> books = bookService.getAllBooks().stream()
+                .map(BookResponseDto::fromEntity)
+                .toList();
+        return ResponseEntity.ok(books);
     }
-//    GET /api/books/{id}
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<BookEntity> getBookById(@PathVariable UUID id) {
-        return new ResponseEntity<>(bookService.getBookById(id), HttpStatus.OK);
+    public ResponseEntity<BookResponseDto> getBookById(@PathVariable UUID id) {
+        BookEntity book = bookService.getBookById(id);
+        return ResponseEntity.ok(BookResponseDto.fromEntity(book));
     }
-//    POST /api/books
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<BookEntity> createBook(@Valid @RequestBody BookEntity book) {
-        return new ResponseEntity<>(bookService.createBook(book), HttpStatus.OK);
+    public ResponseEntity<BookResponseDto> createBook(@Valid @RequestBody BookRequestDto bookDto) {
+        BookEntity created = bookService.createBook(bookDto);
+        return new ResponseEntity<>(BookResponseDto.fromEntity(created), HttpStatus.CREATED);
     }
-//    PUT /api/books/{id}
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<BookEntity> updateBook(@PathVariable UUID id,@Valid @RequestBody BookEntity book) {
-        return new ResponseEntity<>(bookService.updateBook(id, book), HttpStatus.OK);
+    public ResponseEntity<BookResponseDto> updateBook(@PathVariable UUID id, @Valid @RequestBody BookRequestDto bookDto) {
+        BookEntity updated = bookService.updateBook(id, bookDto);
+        return ResponseEntity.ok(BookResponseDto.fromEntity(updated));
     }
-//    DELETE /api/books/{id}
+
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBook(@PathVariable UUID id) {
         bookService.deleteBook(id);
-        return new ResponseEntity<>( HttpStatus.NO_CONTENT );
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

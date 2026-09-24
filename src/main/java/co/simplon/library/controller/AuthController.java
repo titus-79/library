@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
 import java.util.Set;
 
 @RestController
@@ -64,10 +65,16 @@ public class AuthController {
         RoleEntity roleUser = roleRepository.findById("ROLE_USER")
                 .orElseThrow(() -> new ResourceNotFoundException("Rôle ROLE_USER introuvable en base"));
 
+        String rawPassword = Objects.requireNonNull(request.password(), "password ne doit pas être null");
+
+        String encodedPassword = Objects.requireNonNull(
+                passwordEncoder.encode(rawPassword),
+                "le mot de passe encodé ne doit pas être null");
+
         UserEntity user = UserEntity.builder()
                 .username(request.username())
                 .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
+                .password(encodedPassword)
                 .authorities(Set.of(roleUser))
                 .build();
 
@@ -77,8 +84,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public LoginDto login(@Valid @RequestBody LoginRequest request) {
-        Authentication auth = this.authManager.authenticate(new UsernamePasswordAuthenticationToken(
-                request.username(), request.password()));
+        String username = Objects.requireNonNull(request.username(), "username ne doit pas être null");
+        String password = Objects.requireNonNull(request.password(), "password ne doit pas être null");
+
+        Authentication auth = this.authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password));
         String token = tokenService.generateToken(auth);
 
         return new LoginDto(token, auth.getName());

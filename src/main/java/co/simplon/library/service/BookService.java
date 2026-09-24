@@ -1,5 +1,7 @@
 package co.simplon.library.service;
 
+import co.simplon.library.mapper.BookMapper;
+import co.simplon.library.dto.BookRequestDto;
 import co.simplon.library.entity.BookEntity;
 import co.simplon.library.exception.ResourceNotFoundException;
 import co.simplon.library.repository.BookRepository;
@@ -23,27 +25,23 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-
     public BookEntity getBookById(UUID id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'ID: " + id));
     }
 
     @Transactional
-    public BookEntity createBook(BookEntity book) {
+    public BookEntity createBook(BookRequestDto dto) {
+        BookEntity book = BookMapper.toEntity(dto);
         return bookRepository.save(book);
     }
 
     @Transactional
-    public BookEntity updateBook(UUID id, BookEntity updateBook) {
+    public BookEntity updateBook(UUID id, BookRequestDto dto) {
         BookEntity book = bookRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Livre non trouvé avec l'ID: " + id));
 
-            book.setTitle(updateBook.getTitle());
-            book.setAuthor(updateBook.getAuthor());
-            book.setCategory(updateBook.getCategory());
-            book.setYearPublish(updateBook.getYearPublish());
-            book.setNbCopyAllowed(updateBook.getNbCopyAllowed());
+        BookMapper.updateEntity(book, dto);
         return bookRepository.save(book);
     }
 

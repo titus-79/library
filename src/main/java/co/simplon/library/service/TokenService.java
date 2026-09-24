@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -26,7 +27,7 @@ public class TokenService {
         JwsHeader header = JwsHeader.with(SignatureAlgorithm.RS256).build();
 
         String scope = auth.getAuthorities().stream()
-                .map((authority) -> authority.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" ")); // ex: "ROLE_USER ROLE_ADMIN"
 
         Instant now = Instant.now();

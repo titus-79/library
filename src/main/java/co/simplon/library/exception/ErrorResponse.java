@@ -1,6 +1,7 @@
 package co.simplon.library.exception;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class ErrorResponse {
 
@@ -10,7 +11,7 @@ public class ErrorResponse {
   private String message;
 
   public ErrorResponse(int status, String error, String message) {
-    this.timestamp = LocalDateTime.now();
+    this.timestamp = LocalDateTime.now(ZoneId.systemDefault());
     this.status = status;
     this.error = error;
     this.message = message;

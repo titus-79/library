@@ -2,6 +2,9 @@ package co.simplon.library.entity;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.util.List;
@@ -20,15 +23,16 @@ public class BookEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Nonnull
+    @NotBlank
     @Column(nullable = false)
     private String title;
 //    un auteur
-    @Nonnull
+    @NotBlank
     @Column(nullable = false)
     private String author;
 //    une catégorie
-    @ElementCollection
+    @NotEmpty
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "book_category", joinColumns = @JoinColumn(name = "book_id"))
     @Column(name = "category")
     @Nonnull
@@ -37,6 +41,7 @@ public class BookEntity {
     @Column(nullable = false)
     private int yearPublish;
 //    un nombre d'exemplaires disponibles
+    @PositiveOrZero
     @Column(nullable = false)
     private int nbCopyAllowed;
 
